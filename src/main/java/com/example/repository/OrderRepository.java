@@ -9,7 +9,8 @@ import java.util.UUID;
 @Repository
 public class OrderRepository extends MainRepository<Order> {
 
-    private static final String DATA_PATH = "orders.json";
+    private static final String DATA_PATH = "src/main/java/com/example/data/orders.json";
+    ;
 
     @Override
     protected String getDataPath() {
