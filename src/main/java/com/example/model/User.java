@@ -1,5 +1,6 @@
 package com.example.model;
 
+
 @Component
 public class User {
     private UUID id;
