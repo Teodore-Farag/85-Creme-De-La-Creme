@@ -10,7 +10,6 @@ import java.util.UUID;
 public class OrderRepository extends MainRepository<Order> {
 
     private static final String DATA_PATH = "src/main/java/com/example/data/orders.json";
-    ;
 
     @Override
     protected String getDataPath() {

@@ -20,34 +20,27 @@ public class OrderController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> addOrder(@RequestBody Order order) {
+    public void addOrder(@RequestBody Order order) {
         orderService.addOrder(order);
-        return ResponseEntity.ok("Order added successfully");
     }
 
     @GetMapping("/")
-    public ResponseEntity<ArrayList<Order>> getOrders() {
-        ArrayList<Order> orders = orderService.getOrders();
-        return ResponseEntity.ok(orders);
+    public ArrayList<Order> getOrders() {
+        return orderService.getOrders();
     }
 
+
     @GetMapping("/{orderId}")
-    public ResponseEntity<Order> getOrderById(@PathVariable UUID orderId) {
-        Order order = orderService.getOrderById(orderId);
-        if (order != null) {
-            return ResponseEntity.ok(order);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    public Order getOrderById(@PathVariable UUID orderId) {
+        return orderService.getOrderById(orderId);
     }
+
+
     @DeleteMapping("/delete/{orderId}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable UUID orderId) {
-        try {
-            orderService.deleteOrderById(orderId);
-            return ResponseEntity.ok("Order deleted successfully.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found.");
-        }
+    public String deleteOrderById(@PathVariable UUID orderId) {
+        orderService.deleteOrderById(orderId);
+        return "Order deleted successfully.";
     }
+
 }
 

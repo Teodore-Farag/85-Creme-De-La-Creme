@@ -45,17 +45,18 @@ public class OrderService extends MainService<Order> {
         return order;
     }
 
-    public void deleteOrderById(UUID orderId) {
+    public void deleteOrderById(UUID orderId) throws IllegalArgumentException {
         if (orderId == null) {
             throw new IllegalArgumentException("Order ID cannot be null");
         }
 
         Order order = orderRepository.getOrderById(orderId);
         if (order == null) {
-            throw new RuntimeException("Order with ID " + orderId + " not found");
+            throw new IllegalArgumentException("Order with ID " + orderId + " not found");
         }
 
         orderRepository.deleteOrderById(orderId);
     }
+
 
 }
