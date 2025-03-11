@@ -11,7 +11,6 @@ import java.util.UUID;
 @SuppressWarnings("rawtypes")
 public class OrderService extends MainService<Order> {
 
-    private static final java.util.UUID UUID = java.util.UUID.randomUUID();
     private final OrderRepository orderRepository;
 
     public OrderService(OrderRepository orderRepository) {
@@ -20,9 +19,12 @@ public class OrderService extends MainService<Order> {
 
     public void addOrder(Order order) {
         if (order.getId() == null) {
-            order.setId(UUID);
+            order.setId(UUID.randomUUID());
         } else if (orderRepository.getOrderById(order.getId()) != null) {
             throw new IllegalArgumentException("Order ID already exists!");
+        }
+        if (order.getProducts().size()==0){
+            throw new IllegalArgumentException("Order have no Products!");
         }
         orderRepository.addOrder(order);
     }

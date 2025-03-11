@@ -62,8 +62,14 @@ public class ProductRepository extends MainRepository<Product> {
         ArrayList<Product> products = findAll();
         for (Product product : products) {
             if (product.getId().equals(productId)) {
-                product.setName(newName);
+                if(newName!=null){
+                product.setName(newName);}
+                if(newPrice>=0){
                 product.setPrice(newPrice);
+                }
+                else{
+                    throw new IllegalArgumentException("Price Cannot be less than 0");
+                }
                 saveAll(products);
                 return product;
             }
@@ -75,6 +81,9 @@ public class ProductRepository extends MainRepository<Product> {
     public void applyDiscount(double discount, ArrayList<UUID> productIds){
         ArrayList<Product> products = findAll();
         double dis=0;
+        if(discount<0){
+            throw new IllegalArgumentException("Discount Cannot be Negative");
+        }
         for (Product product : products) {
             for(int i=0;i<productIds.size();i++){
                 if(productIds.get(i).equals(product.getId()))
