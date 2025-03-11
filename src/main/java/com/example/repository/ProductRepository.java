@@ -29,23 +29,22 @@ public class ProductRepository extends MainRepository<Product> {
     protected Class<Product[]> getArrayType() {
         return Product[].class;
     }
-//Add Product
-    public Product addProduct(Product product)
-    {
-        if (product.getId() == null)
-        {
+
+    //Add Product
+    public Product addProduct(Product product) {
+        if (product.getId() == null) {
             product.setId(UUID.randomUUID());
         }
         save(product);
         return product;
     }
-//Get All Products
-    public ArrayList<Product> getProducts()
-    {
+
+    //Get All Products
+    public ArrayList<Product> getProducts() {
         return findAll();
     }
 
-//getProductById
+    //getProductById
     public Optional<Product> getProductById(UUID productId) {
         try {
             return findAll().stream()
@@ -57,17 +56,17 @@ public class ProductRepository extends MainRepository<Product> {
         }
     }
 
-//Update product
+    //Update product
     public Product updateProduct(UUID productId, String newName, double newPrice) {
         ArrayList<Product> products = findAll();
         for (Product product : products) {
             if (product.getId().equals(productId)) {
-                if(newName!=null){
-                product.setName(newName);}
-                if(newPrice>=0){
-                product.setPrice(newPrice);
+                if (newName != null) {
+                    product.setName(newName);
                 }
-                else{
+                if (newPrice >= 0) {
+                    product.setPrice(newPrice);
+                } else {
                     throw new IllegalArgumentException("Price Cannot be less than 0");
                 }
                 saveAll(products);
@@ -78,18 +77,17 @@ public class ProductRepository extends MainRepository<Product> {
     }
 
     //Discount
-    public void applyDiscount(double discount, ArrayList<UUID> productIds){
+    public void applyDiscount(double discount, ArrayList<UUID> productIds) {
         ArrayList<Product> products = findAll();
-        double dis=0;
-        if(discount<0){
+        double dis = 0;
+        if (discount < 0) {
             throw new IllegalArgumentException("Discount Cannot be Negative");
         }
         for (Product product : products) {
-            for(int i=0;i<productIds.size();i++){
-                if(productIds.get(i).equals(product.getId()))
-                {
-                     dis = product.getPrice() * (discount/100);
-                    product.setPrice(product.getPrice()-dis);
+            for (int i = 0; i < productIds.size(); i++) {
+                if (productIds.get(i).equals(product.getId())) {
+                    dis = product.getPrice() * (discount / 100);
+                    product.setPrice(product.getPrice() - dis);
                 }
                 saveAll(products);
             }

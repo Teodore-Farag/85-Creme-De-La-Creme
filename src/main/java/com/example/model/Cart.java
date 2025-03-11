@@ -10,19 +10,23 @@ import java.util.UUID;
 public class Cart {
     private UUID id;
     private UUID userId;
-    private List<Product> products=new ArrayList<>();
-    public Cart (){
+    private List<Product> products = new ArrayList<>();
+
+    public Cart() {
 
     }
-    public Cart (UUID id, UUID userId, List<Product> products) {
+
+    public Cart(UUID id, UUID userId, List<Product> products) {
         this.id = id;
         this.userId = userId;
         this.products = products;
     }
-    public Cart ( UUID userId, List<Product> products) {
+
+    public Cart(UUID userId, List<Product> products) {
         this.userId = userId;
         this.products = products;
     }
+
     public List<Product> getProducts() {
         return products;
     }

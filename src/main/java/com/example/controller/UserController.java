@@ -1,7 +1,11 @@
 package com.example.controller;
 
+import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
 import com.example.model.User;
+import com.example.service.CartService;
+import com.example.service.ProductService;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +18,14 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final CartService cartService;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CartService cartService, ProductService productService) {
         this.userService = userService;
+        this.cartService = cartService;
+        this.productService = productService;
     }
 
     @PostMapping("/")
@@ -43,10 +51,16 @@ public class UserController {
         return userService.getOrdersByUserId(userId);
     }
 
-    //    TODO  8.1.2.5 need to be done after the cart service is done
     @PostMapping("/{userId}/checkout")
     public String addOrderToUser(@PathVariable UUID userId) {
-        return null;
+        try {
+            userService.addOrderToUser(userId);
+            return "successfully added order to user with UserId: " + userId;
+
+        } catch (Exception e) {
+            return "failed to add order to user with UserId: " + userId + "\n" + e.getMessage();
+        }
+
     }
 
     @PostMapping("/{userId}/removeOrder")
@@ -59,22 +73,40 @@ public class UserController {
         }
     }
 
-    //    TODO  8.1.2.7 need to be done after the cart service is done
     @DeleteMapping("/{userId}/emptyCart")
     public String emptyCart(@PathVariable UUID userId) {
-        return null;
+        try {
+            userService.emptyCart(userId);
+            return "successfully empty cart from user with id " + userId;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
-    //    TODO  8.1.2.8 need to be done after the cart service is done
     @PutMapping("/addProductToCart")
     public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId) {
-        return null;
+        try {
+            Cart userCart = cartService.getCartByUserId(userId);
+            Product product = productService.getProductById(productId);
+            cartService.addProductToCart(userCart.getId(), product);
+            return "successfully added product to user with id " + userId;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 
     //    TODO  8.1.2.9 need to be done after the cart service is done
     @PutMapping("/deleteProductFromCart")
     public String deleteProductFromCart(@RequestParam UUID userId, @RequestParam UUID productId) {
-        return null;
+        try {
+            Cart userCart = cartService.getCartByUserId(userId);
+            Product product = productService.getProductById(productId);
+            cartService.deleteProductFromCart(userCart.getId(), product);
+            return "successfully deleted product from user with id " + userId;
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+
     }
 
     @DeleteMapping("/delete/{userId}")

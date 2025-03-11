@@ -107,22 +107,20 @@ public class CartRepository extends MainRepository<Cart> {
         }
     }
 
-    public void deleteCartById(UUID cartId){
-        if(cartId==null){
-            throw new IllegalArgumentException("CartNotFound");
-        }
-        if(getCartById(cartId)==null){
-            throw new IllegalArgumentException("CartNotFound");
-        }
-        ArrayList<Cart> carts = findAll();
-        boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
-        if (removed) {
-            saveAll(carts);
-        }
+    public void deleteCartById(UUID cartId) {
+            if(cartId==null){
+                throw new IllegalArgumentException("CartNotFound");
+            }
+            if(getCartById(cartId)==null){
+                throw new IllegalArgumentException("CartNotFound");
+            }
+
+            ArrayList<Cart> carts = findAll();
+            boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
+            if (removed) {
+                saveAll(carts);
+            }
     }
-
-
-
 
 
 }
