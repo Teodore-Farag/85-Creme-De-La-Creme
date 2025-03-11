@@ -11,7 +11,8 @@ public class Order {
     private UUID id;
     private UUID userId;
     private double totalPrice;
-    private List<Product> products=new ArrayList<>();
+    private List<Product> products = new ArrayList<>();
+    private Order order;
 
     public Order() {
     }
@@ -54,7 +55,7 @@ public class Order {
 
     // Setter for totalPrice
     public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
+        order.totalPrice = totalPrice;
     }
 
     // Getter for products
@@ -76,4 +77,4 @@ public class Order {
     public void removeProduct(Product product) {
         this.products.remove(product);
     }
-    }
+}
