@@ -854,7 +854,8 @@
          Order order2 = new Order(userId, 110, new ArrayList<>());
          newUser.setOrders(Arrays.asList(order1, order2));
          userService.addUser(newUser);
-         User addedUser = userService.getUserById(userId);
+         assertNotNull(userService.getUserById(userId));
+         User addedUser = userService.getUserById(newUser.getId());
          assertNotNull(addedUser.getOrders());
          assertEquals(2,addedUser.getOrders().size());
          assertTrue(addedUser.getOrders().get(0).getUserId().equals(userId)&&addedUser.getOrders().get(1).getUserId().equals(userId));
@@ -913,7 +914,7 @@
          orders.add(order2);
          user1.setOrders(orders);
          User CreatedUser=userService.addUser(user1);
-         userService.removeOrderFromUser(CreatedUser.getId(),CreatedUser.getOrders().get(1).getId());
+         userService.removeOrderFromUser(CreatedUser.getId(),CreatedUser.getOrders().get(0).getId());
          assertEquals(1,userService.getUserById(id).getOrders().size());
      }
      @Test

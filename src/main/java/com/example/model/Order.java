@@ -12,7 +12,7 @@ public class Order {
     private UUID userId;
     private double totalPrice;
     private List<Product> products = new ArrayList<>();
-    private Order order;
+
 
     public Order() {
     }
@@ -55,7 +55,7 @@ public class Order {
 
     // Setter for totalPrice
     public void setTotalPrice(double totalPrice) {
-        order.totalPrice = totalPrice;
+        this.totalPrice = totalPrice;
     }
 
     // Getter for products
