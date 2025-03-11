@@ -65,16 +65,23 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
     public void addProductToCart(UUID cartId, Product product) {
-        List<Cart> carts = findAll(); // Retrieve all carts
-
-        for (Cart c : carts) {
-            if (c.getId().equals(cartId)) { // Find the matching cart
-                c.getProducts().add(product); // Modify the cart directly
-                saveAll(carts); // Save the updated list
-                return;
-            }
+        Cart cart = getCartById(cartId);
+        cart.getProducts().add(product);
+        save(cart);
+    }
+    public void deleteProductFromCart(UUID cartId, Product product){
+        Cart cart = getCartById(cartId);
+        cart.getProducts().remove(product);
+        save(cart);
+    }
+    public void deleteCartById(UUID cartId){
+        ArrayList<Cart> carts = findAll();
+        boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
+        if (removed) {
+            saveAll(carts);
         }
     }
+
 
 
 
