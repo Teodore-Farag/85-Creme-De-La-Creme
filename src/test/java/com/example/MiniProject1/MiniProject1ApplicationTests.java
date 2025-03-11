@@ -67,8 +67,8 @@
  	@Autowired
  	private UserService userService;
 
-// 	@Autowired
-// 	private CartService cartService;
+ 	@Autowired
+ 	private CartService cartService;
 
  	@Autowired
  	private ProductService productService;
@@ -78,8 +78,8 @@
  	@Autowired
  	private UserRepository userRepository;
 
-// 	@Autowired
-// 	private CartRepository cartRepository;
+ 	@Autowired
+ 	private CartRepository cartRepository;
 
  	@Autowired
  	private ProductRepository productRepository;
@@ -884,6 +884,7 @@
 
      // -------------5.Add Order To cart To Be Done
 
+
      // -------------6.EmptyCart to be Done
 
      // -------------7.Remove Order From User By ID
@@ -1121,10 +1122,233 @@
          assertEquals(productService.getProducts().size(),2);
      }
 // 	// --------------------------------- CartService Tests -------------------------
-//    @BeforeEach
-//    void removeCart() throws Exception{
-//        cartRepository.saveAll(new ArrayList<>());
-//    }
+    @BeforeEach
+    void removeCart() throws Exception{
+        cartRepository.saveAll(new ArrayList<>());
+    }
+     // // ---------------1.AddCart
+    @Test
+    void AddCartWithoutID(){
+        Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+        List<Product> products=new ArrayList<Product>();
+        products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(null,products));
+         assertNotNull(newCart);
+         assertTrue(cartService.getCarts().size()!=0);
+     }
+
+     @Test
+     void AddCartWithID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         assertNotNull(newCart);
+         assertTrue(cartService.getCarts().size()!=0);
+     }
+     @Test
+     void Add2CartsWithTheSameUser(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         Cart newCart1=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         assertTrue(cartService.getCarts().size()==2,"Number of Carts is Correct");
+         assertFalse(cartService.getCarts().getFirst().getUserId()==cartService.getCarts().getLast().getUserId());
+     }
+     // // ---------------2.GetAllCarts
+     @Test
+     void GetAllCartsWhileEmpty(){
+        assertNotNull(cartService.getCarts());
+        assertTrue(cartService.getCarts().isEmpty());
+     }
+
+     @Test
+     void GetAllCartsWhichContainsOneCart(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         assertTrue(cartService.getCarts().size()==1,"Number of Carts is Correct");
+         assertEquals(newCart.getUserId(),cartService.getCarts().getFirst().getUserId());
+     }
+
+     @Test
+     void GetAllCartsWhichContainsMultipleCarts(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         Cart newCart2=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         Cart newCart3=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         List<Cart> carts=new ArrayList<Cart>();
+         carts.add(newCart);
+         carts.add(newCart2);
+         carts.add(newCart3);
+         assertTrue(cartService.getCarts().size()==3,"Number of Carts is Correct");
+     }
+     // // ---------------3.GetCartByID
+//
+     @Test
+     void GetCartByWrongID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         cartService.addCart(newCart);
+         assertNull(cartService.getCartById(UUID.randomUUID()));
+     }
+
+     @Test
+     void GetCartByNullID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         cartService.addCart(newCart);
+         assertNull(cartService.getCartById(null));
+     }
+     @Test
+     void GetCartByCorrectID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         List<Product> products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart=cartService.addCart(new Cart(UUID.randomUUID(),newUser.getId(),products));
+         cartService.addCart(newCart);
+         assertNotNull(cartService.getCartById(newCart.getId()));
+     }
+// // ---------------4.GetCartByUserID
+
+     @Test
+         void GetCartByWrongUserID() {
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertNull(cartService.getCartByUserId(UUID.randomUUID()));
+     }
+     @Test
+     void GetCartByNullUserID() {
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertNull(cartService.getCartByUserId(null));
+     }
+     @Test
+     void GetCartByCorrectUserID() {
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertNotNull(cartService.getCartByUserId(newCart.getUserId()));
+     }
+
+     // // ---------------5.AddProductToCart
+     @Test
+     void AddProductWithWrongCartID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()->cartService.addProductToCart(UUID.randomUUID(),AddedProduct1));
+     }
+     @Test
+     void AddNullProductToCartWithCorrectID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()->cartService.addProductToCart(UUID.randomUUID(),null));
+     }
+     @Test
+     void AddProductToCartWithCorrectID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), new ArrayList<Product>()));
+         cartService.addProductToCart(cartService.getCarts().getFirst().getId(),AddedProduct1);
+         assertTrue(cartService.getCarts().getFirst().getProducts().size()!=0);
+     }
+     // // ---------------6.DeleteProductFromCart
+     @Test
+     void DeleteProductWithWrongCartID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()->cartService.deleteProductFromCart(UUID.randomUUID(),AddedProduct1));
+     }
+     @Test
+     void DeleteNullProductFromCartWithCorrectID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()->cartService.deleteProductFromCart(UUID.randomUUID(),null));
+     }
+     @Test
+     void DeleteProductFromCartWithCorrectID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.deleteProductFromCart(cartService.getCartById(newCart.getId()).getId(),AddedProduct1);
+         assertTrue(cartService.getCartByUserId(newUser.getId()).getProducts().size()==0);
+     }
+     // // ---------------7.DeleteCartByID
+     @Test
+     void DeleteCartByWrongID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()->cartService.deleteCartById(UUID.randomUUID()));
+     }
+     @Test
+     void DeleteCartByNullID() {
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         assertThrows(Exception.class,()-> cartService.deleteCartById(null));
+     }
+     @Test
+     void DeleteCartByCorrectID(){
+         User newUser = userService.addUser(new User("Youssef", new ArrayList<Order>()));
+         Product AddedProduct1 = productService.addProduct(new Product(UUID.randomUUID(), "Milk", 25));
+         List<Product> products = new ArrayList<Product>();
+         products.add(AddedProduct1);
+         Cart newCart = cartService.addCart(new Cart(UUID.randomUUID(), newUser.getId(), products));
+         cartService.addCart(newCart);
+         cartService.deleteCartById(newCart.getId());
+         assertTrue(cartService.getCarts().isEmpty());
+     }
 // 	// --------------------------------- OrderService Tests -------------------------
 
     @BeforeEach
