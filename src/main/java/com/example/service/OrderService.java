@@ -23,7 +23,7 @@ public class OrderService extends MainService<Order> {
         } else if (orderRepository.getOrderById(order.getId()) != null) {
             throw new IllegalArgumentException("Order ID already exists!");
         }
-        if (order.getProducts().size()==0){
+        if (order.getProducts().size() == 0) {
             throw new IllegalArgumentException("Order have no Products!");
         }
         orderRepository.addOrder(order);

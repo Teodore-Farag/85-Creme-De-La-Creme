@@ -48,10 +48,10 @@ public class UserRepository extends MainRepository<User> {
 
     public User addUser(User user) {
         try {
-            if (user.getId() == null ) {
+            if (user.getId() == null) {
                 user.setId(UUID.randomUUID());
             }
-            if(getUserById(user.getId())!=null){
+            if (getUserById(user.getId()) != null) {
                 throw new RuntimeException("User with ID " + user.getId() + " already exists.");
             }
             save(user);

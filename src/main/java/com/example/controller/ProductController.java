@@ -27,31 +27,33 @@ public class ProductController {
 
     @PostMapping("/")
     public Product addProduct(@RequestBody Product product) {
-        return  productService.addProduct(product);
+        return productService.addProduct(product);
     }
 
     @GetMapping("/")
     public ArrayList<Product> getProducts() {
         return productService.getProducts();
     }
+
     //getProductById
     @GetMapping("/{productId}")
     public Product getProductById(@PathVariable UUID productId) {
         return productService.getProductById(productId);
     }
+
     //update product
     @PutMapping("/update/{productId}")
-    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String,Object>
+    public Product updateProduct(@PathVariable UUID productId, @RequestBody Map<String, Object>
             body) {
         String name = (String) body.get("name");
         Double price = ((Number) body.get("price")).doubleValue();
         return productService.updateProduct(productId, name, price);
     }
-//Apply discount
+
+    //Apply discount
     @PutMapping("/applyDiscount")
     public String applyDiscount(@RequestParam double discount, @RequestBody ArrayList<UUID>
-            productIds)
-    {
+            productIds) {
         productService.applyDiscount(discount, productIds);
         return "Discount applied successfully!";
     }

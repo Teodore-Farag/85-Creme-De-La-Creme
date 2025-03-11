@@ -69,21 +69,20 @@ public class CartRepository extends MainRepository<Cart> {
         cart.getProducts().add(product);
         save(cart);
     }
-    public void deleteProductFromCart(UUID cartId, Product product){
+
+    public void deleteProductFromCart(UUID cartId, Product product) {
         Cart cart = getCartById(cartId);
         cart.getProducts().remove(product);
         save(cart);
     }
-    public void deleteCartById(UUID cartId){
+
+    public void deleteCartById(UUID cartId) {
         ArrayList<Cart> carts = findAll();
         boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
         if (removed) {
             saveAll(carts);
         }
     }
-
-
-
 
 
 }

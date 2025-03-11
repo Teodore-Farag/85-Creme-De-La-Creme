@@ -1,6 +1,8 @@
 package com.example.service;
 
+import com.example.model.Cart;
 import com.example.model.Order;
+import com.example.model.Product;
 import com.example.model.User;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,12 @@ import java.util.UUID;
 public class UserService extends MainService<User> {
 
     private final UserRepository userRepository;
+    private final CartService cartService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CartService cartService) {
         this.userRepository = userRepository;
+        this.cartService = cartService;
     }
 
 
@@ -38,14 +42,32 @@ public class UserService extends MainService<User> {
         return userRepository.getOrdersByUserId(userId);
     }
 
-    //    TODO 7.2.2.5 need to be done after the cart service is done
     public void addOrderToUser(UUID userId) {
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart != null) {
+            double cartTotal = 0;
+            for (Product product : cart.getProducts()) {
+                cartTotal += product.getPrice();
+            }
 
+            Order newOrder = new Order(userId, cartTotal, cart.getProducts());
+            userRepository.addOrderToUser(userId, newOrder);
+            emptyCart(userId);
+        } else {
+
+            throw new RuntimeException("Cart not found for user " + userId);
+        }
     }
 
-    //    TODO 7.2.2.6 need to be done after the cart service is done
     public void emptyCart(UUID userId) {
-
+        Cart cart = cartService.getCartByUserId(userId);
+        if (cart != null) {
+            cart.setProducts(null);
+            cartService.deleteCartById(cart.getId());
+            cartService.addCart(cart);
+        } else {
+            throw new RuntimeException("Cart not found for user " + userId);
+        }
     }
 
     public void removeOrderFromUser(UUID userId, UUID orderId) {

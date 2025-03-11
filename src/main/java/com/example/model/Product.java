@@ -11,15 +11,16 @@ public class Product {
     private double price;
 
 
-    public Product()
-    {
+    public Product() {
     }
+
     public Product(UUID id, String name, double price) {
         this.id = id;
         this.name = name;
         this.price = price;
     }
-    public Product( String name, double price) {
+
+    public Product(String name, double price) {
         this.name = name;
         this.price = price;
     }
@@ -28,9 +29,11 @@ public class Product {
     public UUID getId() {
         return id;
     }
+
     public void setId(UUID id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }

@@ -15,14 +15,16 @@ import java.util.UUID;
 @Service
 @SuppressWarnings("rawtypes")
 
-public class ProductService extends MainService<Product>{
+public class ProductService extends MainService<Product> {
     private final ProductRepository productRepository;
+
     @Autowired
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-    public Product addProduct(Product product){
+
+    public Product addProduct(Product product) {
         return productRepository.addProduct(product);
     }
 
@@ -38,22 +40,23 @@ public class ProductService extends MainService<Product>{
         }
         return product.get();
     }
-//update product
-        public Product updateProduct(UUID productId, String newName, double newPrice) {
-            productRepository.updateProduct(productId, newName, newPrice);
-            return productRepository.getProductById(productId)
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
-        }
- //Apply discount
-    public void applyDiscount(double discount, ArrayList<UUID> productIds)
-    {
+
+    //update product
+    public Product updateProduct(UUID productId, String newName, double newPrice) {
+        productRepository.updateProduct(productId, newName, newPrice);
+        return productRepository.getProductById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+    }
+
+    //Apply discount
+    public void applyDiscount(double discount, ArrayList<UUID> productIds) {
         productRepository.applyDiscount(discount, productIds);
     }
- //Delete product
-    public void deleteProductById(UUID productId)
-    {
-        productRepository.deleteProductById( productId);
+
+    //Delete product
+    public void deleteProductById(UUID productId) {
+        productRepository.deleteProductById(productId);
     }
 
 
-    }
+}
