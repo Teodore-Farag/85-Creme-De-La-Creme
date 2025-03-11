@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import com.example.model.Cart;
+import com.example.model.Order;
 import com.example.model.Product;
 import com.example.model.User;
 import org.springframework.stereotype.Repository;
@@ -65,23 +66,60 @@ public class CartRepository extends MainRepository<Cart> {
     }
 
     public void addProductToCart(UUID cartId, Product product) {
-        Cart cart = getCartById(cartId);
-        cart.getProducts().add(product);
-        save(cart);
-    }
+        try {
+            if(getCartById(cartId)==null){
+                throw new IllegalArgumentException("CartID not Valid");
+            }
+            if(product==null){
+                throw new IllegalArgumentException("product is null");
+            }
+            ArrayList<Cart> allCarts = findAll();
+            for (Cart cart : allCarts) {
+                if (cart.getId() != null && cart.getId().equals(cartId)) {
+                    cart.getProducts().add(product);
+                    saveAll(allCarts);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while adding product to cart", e);
+        }
 
+    }
     public void deleteProductFromCart(UUID cartId, Product product) {
-        Cart cart = getCartById(cartId);
-        cart.getProducts().remove(product);
-        save(cart);
+        try {
+            ArrayList<Cart> allCarts = findAll();
+
+            for (Cart cart : allCarts) {
+                if (cart.getId() != null && cart.getId().equals(cartId)) {
+                    List<Product> products = cart.getProducts();
+                    boolean removed = products.removeIf(p -> p.getId() != null && p.getId().equals(product.getId()));
+                    if (removed) {
+                        saveAll(allCarts);
+                        return;
+                    } else {
+                        throw new RuntimeException("Couldn't find product in cart");
+                    }
+                }
+            }
+            throw new RuntimeException("Couldn't find cart");
+        } catch (Exception e) {
+            throw new RuntimeException("Error while deleting product from cart", e);
+        }
     }
 
     public void deleteCartById(UUID cartId) {
-        ArrayList<Cart> carts = findAll();
-        boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
-        if (removed) {
-            saveAll(carts);
-        }
+            if(cartId==null){
+                throw new IllegalArgumentException("CartNotFound");
+            }
+            if(getCartById(cartId)==null){
+                throw new IllegalArgumentException("CartNotFound");
+            }
+
+            ArrayList<Cart> carts = findAll();
+            boolean removed = carts.removeIf(cart -> cart.getId().equals(cartId));
+            if (removed) {
+                saveAll(carts);
+            }
     }
 
 

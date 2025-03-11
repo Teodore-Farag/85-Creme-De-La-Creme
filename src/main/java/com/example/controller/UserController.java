@@ -55,7 +55,7 @@ public class UserController {
     public String addOrderToUser(@PathVariable UUID userId) {
         try {
             userService.addOrderToUser(userId);
-            return "successfully added order to user with UserId: " + userId;
+            return "Order added successfully" ;
 
         } catch (Exception e) {
             return "failed to add order to user with UserId: " + userId + "\n" + e.getMessage();
@@ -67,7 +67,7 @@ public class UserController {
     public String removeOrderFromUser(@PathVariable UUID userId, @RequestParam UUID orderId) {
         try {
             userService.removeOrderFromUser(userId, orderId);
-            return "successfully removed order from user with id " + orderId;
+            return "Order removed successfully";
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -77,7 +77,7 @@ public class UserController {
     public String emptyCart(@PathVariable UUID userId) {
         try {
             userService.emptyCart(userId);
-            return "successfully empty cart from user with id " + userId;
+            return "Cart emptied successfully" ;
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -87,9 +87,12 @@ public class UserController {
     public String addProductToCart(@RequestParam UUID userId, @RequestParam UUID productId) {
         try {
             Cart userCart = cartService.getCartByUserId(userId);
+            if (userCart == null) {
+                userCart = cartService.addCart(new Cart(userId,new ArrayList<Product>()));
+            }
             Product product = productService.getProductById(productId);
             cartService.addProductToCart(userCart.getId(), product);
-            return "successfully added product to user with id " + userId;
+            return "Product added to cart";
         } catch (Exception e) {
             return e.getMessage();
         }
@@ -102,9 +105,9 @@ public class UserController {
             Cart userCart = cartService.getCartByUserId(userId);
             Product product = productService.getProductById(productId);
             cartService.deleteProductFromCart(userCart.getId(), product);
-            return "successfully deleted product from user with id " + userId;
+            return "Product deleted from cart";
         } catch (Exception e) {
-            return e.getMessage();
+            return "Cart is empty";
         }
 
     }
@@ -113,9 +116,9 @@ public class UserController {
     public String deleteUserById(@PathVariable UUID userId) {
         try {
             userService.deleteUserById(userId);
-            return "successfully deleted user with id " + userId;
+            return  "User deleted successfully" ;
         } catch (Exception e) {
-            return e.getMessage();
+            return "User not found";
         }
     }
 
