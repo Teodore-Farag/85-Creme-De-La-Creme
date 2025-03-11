@@ -50,7 +50,7 @@ public class CartController {
     public String deleteCartById(@PathVariable UUID cartId) {
         try {
             cartService.deleteCartById(cartId);
-            return "successfully deleted cart with id " + cartId;
+            return "Cart deleted successfully" ;
         } catch (Exception e) {
             return e.getMessage();
         }

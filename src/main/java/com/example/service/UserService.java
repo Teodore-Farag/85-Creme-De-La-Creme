@@ -54,7 +54,6 @@ public class UserService extends MainService<User> {
             userRepository.addOrderToUser(userId, newOrder);
             emptyCart(userId);
         } else {
-
             throw new RuntimeException("Cart not found for user " + userId);
         }
     }
@@ -62,7 +61,7 @@ public class UserService extends MainService<User> {
     public void emptyCart(UUID userId) {
         Cart cart = cartService.getCartByUserId(userId);
         if (cart != null) {
-            cart.setProducts(null);
+            cart.setProducts(new ArrayList<Product>());
             cartService.deleteCartById(cart.getId());
             cartService.addCart(cart);
         } else {
