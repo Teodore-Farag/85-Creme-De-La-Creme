@@ -1,92 +1,91 @@
-// package com.example.MiniProject1;
+ package com.example.MiniProject1;
 
-// import static org.junit.jupiter.api.Assertions.assertEquals;
-// import static org.junit.jupiter.api.Assertions.assertNotNull;
-// import static org.junit.jupiter.api.Assertions.assertNull;
-// import static org.junit.jupiter.api.Assertions.assertTrue;
+ import java.io.File;
+ import java.io.IOException;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.UUID;
 
-// import java.io.File;
-// import java.io.IOException;
-// import java.util.ArrayList;
-// import java.util.Arrays;
-// import java.util.HashMap;
-// import java.util.List;
-// import java.util.Map;
-// import java.util.UUID;
+ import org.junit.jupiter.api.AfterEach;
+ import org.springframework.http.MediaType;
+ import org.junit.jupiter.api.BeforeEach;
+ import org.junit.jupiter.api.Test;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+ import org.springframework.context.annotation.ComponentScan;
+ import org.springframework.test.web.servlet.MockMvc;
+ import org.springframework.test.web.servlet.MvcResult;
+ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-// import org.springframework.http.MediaType;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-// import org.springframework.context.annotation.ComponentScan;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.test.web.servlet.MvcResult;
-// import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-// import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+ import com.example.model.Cart;
+ import com.example.model.Order;
+ import com.example.model.Product;
+ import com.example.model.User;
+ import com.example.repository.CartRepository;
+ import com.example.repository.OrderRepository;
+ import com.example.repository.ProductRepository;
+ import com.example.repository.UserRepository;
+ import com.example.service.CartService;
+ import com.example.service.OrderService;
+ import com.example.service.ProductService;
+ import com.example.service.UserService;
+ import com.fasterxml.jackson.core.JsonProcessingException;
+ import com.fasterxml.jackson.core.type.TypeReference;
+ import com.fasterxml.jackson.databind.ObjectMapper;
 
-// import com.example.model.Cart;
-// import com.example.model.Order;
-// import com.example.model.Product;
-// import com.example.model.User;
-// import com.example.repository.CartRepository;
-// import com.example.repository.OrderRepository;
-// import com.example.repository.ProductRepository;
-// import com.example.repository.UserRepository;
-// import com.example.service.CartService;
-// import com.example.service.OrderService;
-// import com.example.service.ProductService;
-// import com.example.service.UserService;
-// import com.fasterxml.jackson.core.JsonProcessingException;
-// import com.fasterxml.jackson.core.type.TypeReference;
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// @ComponentScan(basePackages = "com.example.*")
-// @WebMvcTest
-// class MiniProject1ApplicationTests {
+ import static org.junit.jupiter.api.Assertions.*;
 
-// 	@Value("${spring.application.userDataPath}")
-//     private String userDataPath;
+ @ComponentScan(basePackages = "com.example.*")
+ @WebMvcTest
+ class MiniProject1ApplicationTests {
 
-//     @Value("${spring.application.productDataPath}")
-//     private String productDataPath;
+ 	@Value("${spring.application.userDataPath}")
+     private String userDataPath;
 
-//     @Value("${spring.application.orderDataPath}")
-//     private String orderDataPath;
+     @Value("${spring.application.productDataPath}")
+     private String productDataPath;
 
-//     @Value("${spring.application.cartDataPath}")
-//     private String cartDataPath;
+     @Value("${spring.application.orderDataPath}")
+     private String orderDataPath;
 
-// 	@Autowired
-// 	private MockMvc mockMvc;
+     @Value("${spring.application.cartDataPath}")
+     private String cartDataPath;
 
-// 	@Autowired
-// 	private ObjectMapper objectMapper;
+ 	@Autowired
+ 	private MockMvc mockMvc;
+
+ 	@Autowired
+ 	private ObjectMapper objectMapper;
 
 	
 
-// 	@Autowired
-// 	private UserService userService;
+ 	@Autowired
+ 	private UserService userService;
 
 // 	@Autowired
 // 	private CartService cartService;
 
-// 	@Autowired
-// 	private ProductService productService;
+ 	@Autowired
+ 	private ProductService productService;
 
-// 	@Autowired
-// 	private OrderService orderService;
-// 	@Autowired
-// 	private UserRepository userRepository;
+ 	@Autowired
+ 	private OrderService orderService;
+ 	@Autowired
+ 	private UserRepository userRepository;
 
 // 	@Autowired
 // 	private CartRepository cartRepository;
 
-// 	@Autowired
-// 	private ProductRepository productRepository;
+ 	@Autowired
+ 	private ProductRepository productRepository;
 
-// 	@Autowired
-// 	private OrderRepository orderRepository;
+ 	@Autowired
+ 	private OrderRepository orderRepository;
 
 // 	public void overRideAll(){
 //         try{
@@ -744,15 +743,551 @@
 // 				.andExpect(MockMvcResultMatchers.content().string("Order not found"));
 // 	}
 
-	
 
-	
+// 	// --------------------------------- UserService Tests -------------------------
+
+     @BeforeEach
+     void removeUsers() throws Exception{
+         userRepository.saveAll(new ArrayList<>());
+     }
+
+     @AfterEach
+     void removeUsersAfter() throws Exception{
+         userRepository.saveAll(new ArrayList<>());
+     }
+ // ---------------1.AddUser
+    @Test
+    void addUserNormally()throws Exception{
+        User newUser=new User("Youssef",new ArrayList<Order>());
+        User AddedUser=userService.addUser(newUser);
+        assertEquals(newUser.getId(),AddedUser.getId(),"Check User Is saved");
+        assertEquals(newUser.getName(),AddedUser.getName(),"Check User Name of the created User");
+        assertEquals(newUser.getOrders(),AddedUser.getOrders(), "CHeck Orders of the Created User");
+    }
+
+    @Test
+     void addUserWithoutID() throws Exception{
+          User newUser=userService.addUser(new User());
+          assertNotNull(newUser.getId());
+          assertNotNull(newUser.getOrders());
+          assertNull(newUser.getName());
+    }
+    @Test
+     void addUserWithOrder() throws Exception{
+        User newUser=new User("Youssef",new ArrayList<Order>());
+        List<Product> products=new ArrayList<Product>();
+        Product p= new Product("Milk",55);
+        products.add(p);
+        List<Order> order=new ArrayList<Order>();
+        Order o=new Order(newUser.getId(),55,products);
+        newUser.setOrders(order);
+        User addedUser=userService.addUser(newUser);
+        assertNotNull(addedUser,"Users Added");
+        assertEquals(addedUser.getOrders(),order,"User's Order Correct");
+
+       }
+
+      // ---------------2.getUsers
+     @Test
+     void getUsersNormally()throws Exception{
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         User newUser1=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         User newUser2=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         List<User> expectedUsers = Arrays.asList(newUser, newUser1, newUser2);
+         assertEquals(expectedUsers.containsAll(userService.getUsers()),userService.getUsers().containsAll(expectedUsers),"All users Retrived");
+         assertEquals(3,userService.getUsers().size(),"Number of Users correct");
+
+     }
+    @Test
+     void getEmptyListOfUsers() throws Exception{
+        List<User>users=userService.getUsers();
+        assertNotNull(users,"Users List not Null");
+        assertTrue(users.isEmpty());
+    }
+    @Test
+     void getUsersAfterDeletingOne()throws Exception{
+        User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+        User newUser1=userService.addUser(new User("Youssef2",new ArrayList<Order>()));
+        assertEquals(2,userService.getUsers().size(),"Number of Users is Correct");
+        userService.deleteUserById(userService.getUsers().get(0).getId());
+        assertEquals(1,userService.getUsers().size());
+    }
+// -------------3.GetUserById
+
+    @Test
+    void getUserbyIdNormally(){
+         UUID temp=UUID.randomUUID();
+         User newUser=userService.addUser(new User(temp,"Youssef",new ArrayList<Order>()));
+         assertNotNull(newUser);
+         assertNotNull(userService.getUserById(temp),"User With this ID exists");
+    }
+
+    @Test
+     void getUserWithWrongId(){
+         UUID temp=UUID.randomUUID();
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         assertNotNull(newUser);
+         assertNull(userService.getUserById(temp),"User With this ID is Wrong");
+    }
+
+    @Test
+     void getUserWithIdandVerifyNameAndOrder(){
+        User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+        assertNotNull(newUser);
+        assertEquals(userService.getUserById(newUser.getId()).getName(),newUser.getName(),"User Name Matches");
+        assertEquals(userService.getUserById(newUser.getId()).getOrders(),newUser.getOrders(),"User Order Matches");
+    }
+     // -------------4.GetUserOrderById
+
+     @Test
+     void getUserOrderWhileEmptyWithID(){
+         UUID temp=UUID.randomUUID();
+         User newUser=userService.addUser(new User(temp,"Youssef",new ArrayList<Order>()));
+         assertEquals(0,userService.getUserById(temp).getOrders().size(),"User Have no Orders");
+     }
+
+     @Test
+     void getUserOrderWithMultipleOrdersUsingID(){
+         UUID userId = UUID.randomUUID();
+         User newUser = new User(userId, "Youssef", new ArrayList<>());
+         Order order1 = new Order(userId, 55, new ArrayList<>());
+         Order order2 = new Order(userId, 110, new ArrayList<>());
+         newUser.setOrders(Arrays.asList(order1, order2));
+         userService.addUser(newUser);
+         assertNotNull(userService.getUserById(userId));
+         User addedUser = userService.getUserById(newUser.getId());
+         assertNotNull(addedUser.getOrders());
+         assertEquals(2,addedUser.getOrders().size());
+         assertTrue(addedUser.getOrders().get(0).getUserId().equals(userId)&&addedUser.getOrders().get(1).getUserId().equals(userId));
+     }
+     @Test
+     void getOrdersWithOnlyIdAssociatedToItsUser(){
+
+         User user1 = userService.addUser(new User("Charlie", new ArrayList<>()));
+         User user2 = userService.addUser(new User("David", new ArrayList<>()));
+         UUID user1Id=user1.getId();
+         UUID user2Id=user2.getId();
+         Order order1 = new Order(user1Id, 55, new ArrayList<>());
+         Order order2 = new Order(user2Id, 110, new ArrayList<>());
+         List<Order> ordersForUser1 = new ArrayList<>();
+         ordersForUser1.add(order1);
+         List<Order> ordersForUser2 = new ArrayList<>();
+         ordersForUser2.add(order2);
+         userService.deleteUserById(user1Id);
+         userService.deleteUserById(user2Id);
+         User user3=userService.addUser(new User(user1.getId(),"Charlie", ordersForUser1));
+         User user4=userService.addUser(new User(user2.getId(),"David", ordersForUser2));
+         assertEquals(1, user3.getOrders().size(), "User1 should have only 1 order");
+         assertTrue(ordersForUser1.contains(order1), "Order should belong to User1");
+         assertFalse(ordersForUser1.contains(order2), "Order should not belong to User2");
+     }
+
+     // -------------5.Add Order To cart To Be Done
+
+     // -------------6.EmptyCart to be Done
+
+     // -------------7.Remove Order From User By ID
+     @Test
+     void RemoveOrderFromListOfOneOrderNormaly(){
+         UUID id=UUID.randomUUID();
+         UUID OrderID=UUID.randomUUID();
+         User user1 = (new User(id,"Youssef", new ArrayList<Order>()));
+         Order order1 = new Order(OrderID,id, 55, new ArrayList<Product>());
+         List<Order> orders=new ArrayList<Order>();
+         orders.add(order1);
+         user1.setOrders(orders);
+         User CreatedUser=userService.addUser(user1);
+         userService.removeOrderFromUser(CreatedUser.getId(),CreatedUser.getOrders().get(0).getId());
+         assertEquals(0,userService.getUserById(id).getOrders().size());
+     }
+
+     @Test
+     void RemoveOrderFromListOfMultipleOrders(){
+         UUID id=UUID.randomUUID();
+         UUID Order1ID=UUID.randomUUID();
+         UUID Order2ID=UUID.randomUUID();
+         User user1 = (new User(id,"Youssef", new ArrayList<Order>()));
+         Order order1 = new Order(Order1ID,id, 55, new ArrayList<Product>());
+         Order order2 = new Order(Order2ID,id, 100, new ArrayList<Product>());
+         List<Order> orders=new ArrayList<Order>();
+         orders.add(order1);
+         orders.add(order2);
+         user1.setOrders(orders);
+         User CreatedUser=userService.addUser(user1);
+         userService.removeOrderFromUser(CreatedUser.getId(),CreatedUser.getOrders().get(0).getId());
+         assertEquals(1,userService.getUserById(id).getOrders().size());
+     }
+     @Test
+     void RemoveMultipleOrdesrFromAnUsersOrdersList(){
+         UUID id=UUID.randomUUID();
+         UUID Order1ID=UUID.randomUUID();
+         UUID Order2ID=UUID.randomUUID();
+         User user1 = (new User(id,"Youssef", new ArrayList<Order>()));
+         Order order1 = new Order(Order1ID,id, 55, new ArrayList<Product>());
+         Order order2 = new Order(Order2ID,id, 100, new ArrayList<Product>());
+         List<Order> orders=new ArrayList<Order>();
+         orders.add(order1);
+         orders.add(order2);
+         user1.setOrders(orders);
+         User CreatedUser=userService.addUser(user1);
+         userService.removeOrderFromUser(CreatedUser.getId(),Order1ID);
+         userService.removeOrderFromUser(CreatedUser.getId(),Order2ID);
+         assertEquals(0,userService.getUserById(id).getOrders().size());
+     }
+     // -------------8.Delete User By ID
+
+     @Test
+     void DeleteUserNormally(){
+         User user1 = userService.addUser(new User("Charlie", new ArrayList<>()));
+         userService.deleteUserById(user1.getId());
+         assertEquals(0,userService.getUsers().size());
+         assertTrue(userService.getUsers().isEmpty());
+     }
+
+     @Test
+     void DeleteOneUserFromListOfUsers(){
+         User user1 = userService.addUser(new User("Charlie", new ArrayList<>()));
+         User user2 = userService.addUser(new User("David", new ArrayList<>()));
+         userService.deleteUserById(user1.getId());
+         assertEquals(1,userService.getUsers().size());
+         assertFalse(userService.getUsers().isEmpty());
+     }
+
+     @Test
+     void DeleteMultipleUserFromListOfUsers(){
+         User user1 = userService.addUser(new User("Charlie", new ArrayList<>()));
+         User user2 = userService.addUser(new User("David", new ArrayList<>()));
+         userService.deleteUserById(user1.getId());
+         userService.deleteUserById(user2.getId());
+         assertEquals(0,userService.getUsers().size());
+         assertTrue(userService.getUsers().isEmpty());
+     }
 
 
+// 	// --------------------------------- ProductService Tests -------------------------
+    @BeforeEach
+    void removeProducts() throws Exception{
+        productRepository.saveAll(new ArrayList<>());
+    }
+      // ---------------1.AddProduct
+    @Test
+    void addProductNormallyWithoutID()throws Exception{
+        Product newProduct=new Product("Milk",25);
+        Product AddedProduct=productService.addProduct(newProduct);
+        assertEquals(newProduct.getId(),AddedProduct.getId(),"Check User Is saved");
+        assertEquals(newProduct.getName(),AddedProduct.getName(),"Check User Name of the created User");
+        assertEquals(newProduct.getPrice(),AddedProduct.getPrice(), "CHeck Orders of the Created User");
+    }
 
+        @Test
+     void addProductWithID() throws Exception{
+         Product AddedProduct=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         assertTrue(productService.getProducts().size()!=0);
+         assertEquals(productService.getProducts().getLast().getId(),(AddedProduct.getId()));
+        }
 
-	
+        @Test
+     void addMultipleProducts() throws Exception{
+            Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+            Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+            assertTrue(productService.getProducts().size()!=0);
+            assertEquals(productService.getProducts().getLast().getId(),(AddedProduct2.getId()));
+            assertEquals(productService.getProducts().getFirst().getId(),(AddedProduct1.getId()));
+        }
+      // ---------------2.GetAllProducts
 
-   
+     @Test
+     void GetProductsWhileEmpty() throws  Exception{
+        assertEquals(0,productService.getProducts().size());
+        assertTrue(productService.getProducts().isEmpty());
+     }
+     @Test
+     void GetProductsFromListofOneProduct() throws Exception{
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         assertTrue(!productService.getProducts().isEmpty());
+         assertEquals(AddedProduct1.getId(),productService.getProducts().get(0).getId());
+     }
+     @Test
+     void GetProductsAfterDeletingOne() throws Exception{
+        Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+        Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+        productService.deleteProductById(productService.getProducts().get(0).getId());
+        assertTrue(productService.getProducts().size()!=0);
+        assertTrue(productService.getProducts().size()==1);
+        assertNotNull(productService.getProducts());
+     }
 
-// }
+      // ---------------3.GetProductById
+     @Test
+     void GetProductByCorrectIdFromAListOfOneProduct() throws Exception{
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         assertNotNull(productService.getProductById(AddedProduct1.getId()));
+     }
+
+     @Test
+     void GetProductByWrongID()throws Exception{
+         UUID productID=UUID.randomUUID();
+         Product AddedProduct1=productService.addProduct(new Product(productID,"Milk",25));
+         Exception exception=assertThrows(Exception.class,()-> productService.getProductById(UUID.randomUUID()));
+     }
+
+     @Test
+     void GetProductByCorrectIdFromAListOfManyProducts() throws Exception{
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         Product AddedProduct3=productService.addProduct(new Product(UUID.randomUUID(),"Choclate",10));
+         Product AddedProduct4=productService.addProduct(new Product(UUID.randomUUID(),"Chips",5));
+         Product AddedProduct5=productService.addProduct(new Product(UUID.randomUUID(),"Pasta",20));
+         assertEquals(AddedProduct5.getName(),productService.getProductById(AddedProduct5.getId()).getName());
+         assertEquals(AddedProduct3.getName(),productService.getProductById(AddedProduct3.getId()).getName());
+
+     }
+      // ---------------4.UpdateProduct
+
+     @Test
+     void UpdateProductThatItsIDDoesNotExist(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         UUID wrongID=UUID.randomUUID();
+         assertThrows(Exception.class,()->productService.updateProduct(wrongID,"Chedder",30));
+     }
+
+     @Test
+     void UpdateProductNormally(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         productService.updateProduct(AddedProduct1.getId(),"Chedder",45);
+         assertEquals("Chedder",productService.getProductById(AddedProduct1.getId()).getName(),"Name Updated Sucssesfully");
+         assertEquals(productService.getProductById(AddedProduct1.getId()).getPrice(),45,"Price Updated Sucssesfully");
+     }
+
+     @Test
+     void UpdateProductWithOnlyOneParameter(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         productService.updateProduct(AddedProduct1.getId(),"Cheese",45);
+         assertEquals("Cheese",productService.getProductById(AddedProduct1.getId()).getName(),"Name Updated Sucssesfully");
+     }
+      // ---------------5.ApplyDiscount
+     @Test
+     void ApplyDiscountNormally(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         Product AddedProduct3=productService.addProduct(new Product(UUID.randomUUID(),"Choclate",10));
+         ArrayList<UUID> productsID=new ArrayList<UUID>();
+         productsID.add(AddedProduct1.getId());
+         productsID.add(AddedProduct2.getId());
+         productsID.add(AddedProduct3.getId());
+         productService.applyDiscount(10,productsID);
+         assertEquals(productService.getProductById(AddedProduct1.getId()).getPrice(),22.5,"Product 1 Updated Correctly");
+         assertEquals(productService.getProductById(AddedProduct2.getId()).getPrice(),40.5,"Product 2 Updated Correctly");
+         assertEquals(productService.getProductById(AddedProduct3.getId()).getPrice(),9.0,"Product 3 Updated Correctly");
+     }
+
+     @Test
+     void ApplyDiscountWithNegativeNumber(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         ArrayList<UUID> productsID=new ArrayList<UUID>();
+         productsID.add(AddedProduct1.getId());
+         assertThrows(Exception.class,()->productService.applyDiscount(-20.0,productsID));
+     }
+     @Test
+     void ApplyDiscountOverAnotherDiscount(){
+         Product AddedProduct3=productService.addProduct(new Product(UUID.randomUUID(),"Choclate",10));
+         ArrayList<UUID> productsID=new ArrayList<UUID>();
+         productsID.add(AddedProduct3.getId());
+         productService.applyDiscount(10,productsID);
+         productService.applyDiscount(10,productsID);
+         assertEquals(productService.getProductById(AddedProduct3.getId()).getPrice(),8.1,"Product 3 Updated Correctly");
+     }
+      // ---------------6.DeleteProduct
+
+     @Test
+     void DeleteProductNormally(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         productService.deleteProductById(AddedProduct1.getId());
+         assertEquals(0,productService.getProducts().size());
+     }
+     @Test
+     void DeleteProductwithWrongID(){
+         UUID wrongId=UUID.randomUUID();
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         assertThrows(Exception.class,()->productService.deleteProductById(wrongId));
+     }
+     @Test
+     void DeleteOneProductFromAListofManyProducts(){
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         Product AddedProduct3=productService.addProduct(new Product(UUID.randomUUID(),"Choclate",10));
+         productService.deleteProductById(AddedProduct1.getId());
+         assertTrue(productService.getProducts().size()>0);
+         assertEquals(productService.getProducts().size(),2);
+     }
+// 	// --------------------------------- CartService Tests -------------------------
+//    @BeforeEach
+//    void removeCart() throws Exception{
+//        cartRepository.saveAll(new ArrayList<>());
+//    }
+// 	// --------------------------------- OrderService Tests -------------------------
+
+    @BeforeEach
+    void removeOrders() throws Exception{
+        orderRepository.saveAll(new ArrayList<>());
+    }
+    // // ---------------1.AddProduct
+    @Test
+     void AddOrderNormally(){
+        User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+        Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+        Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+        List<Product>products=new ArrayList<Product>();
+        products.add(AddedProduct1);
+        products.add(AddedProduct2);
+        Order newOrder=new Order(newUser.getId(),200,products);
+        orderService.addOrder(newOrder);
+        assertTrue(orderService.getOrders().size()>0);
+        assertEquals(orderService.getOrders().get(0).getProducts().getFirst().getName(),products.getFirst().getName());
+        assertEquals(orderService.getOrders().size(),1);
+    }
+
+    @Test
+     void AddOrderAlreadyExist(){
+        User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+        Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+        Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+        List<Product>products=new ArrayList<Product>();
+        products.add(AddedProduct1);
+        products.add(AddedProduct2);
+        Order newOrder=new Order(newUser.getId(),200,products);
+        orderService.addOrder(newOrder);
+        assertThrows(Exception.class,()->orderService.addOrder(newOrder));
+    }
+    @Test
+     void AddOrderWithEmptyProducts(){
+        User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+        Order newOrder=new Order(newUser.getId(),200,new ArrayList<Product>());
+        assertThrows(Exception.class,()-> orderService.addOrder(newOrder));
+    }
+          // ---------------2.GetAllOrders
+         @Test
+         void GetOrdersShouldReturnAnOrder(){
+            User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+            Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+            Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+            List<Product>products=new ArrayList<Product>();
+            products.add(AddedProduct1);
+            products.add(AddedProduct2);
+            Order newOrder=new Order(newUser.getId(),200,products);
+            Order newOrder2=new Order(newUser.getId(),100,products);
+            orderService.addOrder(newOrder);
+            orderService.addOrder(newOrder2);
+            assertTrue(orderService.getOrders().size()>0);
+            assertTrue(orderService.getOrders().getLast().getId().equals(newOrder2.getId()));
+            assertEquals(orderService.getOrders().size(),2);
+         }
+
+         @Test
+         void GetEmptyOrdersList(){
+            assertNotNull(orderService.getOrders());
+            assertTrue(orderService.getOrders().size()==0);
+         }
+
+         @Test
+         void GetOrdersListAfterDeletingOrder(){
+             User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+             Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+             Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+             List<Product>products=new ArrayList<Product>();
+             products.add(AddedProduct1);
+             products.add(AddedProduct2);
+             Order newOrder=new Order(newUser.getId(),200,products);
+             Order newOrder2=new Order(newUser.getId(),100,products);
+             orderService.addOrder(newOrder);
+             orderService.addOrder(newOrder2);
+             orderService.deleteOrderById(newOrder.getId());
+             assertTrue(orderService.getOrders().size()==1);
+             assertTrue(orderService.getOrders().get(0).getId().equals(newOrder2.getId()));
+         }
+      // ---------------3.GetOrderByID
+     @Test
+     void getOrderByCorrectID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         List<Product>products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         products.add(AddedProduct2);
+         Order newOrder=new Order(newUser.getId(),200,products);
+         Order newOrder2=new Order(newUser.getId(),100,products);
+         orderService.addOrder(newOrder);
+         orderService.addOrder(newOrder2);
+         assertEquals(orderService.getOrderById(newOrder.getId()).getTotalPrice(),newOrder.getTotalPrice());
+         assertEquals(orderService.getOrderById(newOrder.getId()).getUserId(),newOrder.getUserId());
+     }
+
+     @Test
+     void getOrderByWrongID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         List<Product>products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         products.add(AddedProduct2);
+         Order newOrder=new Order(newUser.getId(),200,products);
+         Order newOrder2=new Order(newUser.getId(),100,products);
+         orderService.addOrder(newOrder);
+         orderService.addOrder(newOrder2);
+         assertThrows(Exception.class,()-> orderService.getOrderById(UUID.randomUUID()));
+     }
+
+     @Test
+     void getOrderByNullID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         List<Product>products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         products.add(AddedProduct2);
+         Order newOrder=new Order(newUser.getId(),200,products);
+         Order newOrder2=new Order(newUser.getId(),100,products);
+         orderService.addOrder(newOrder);
+         orderService.addOrder(newOrder2);
+         assertThrows(Exception.class,()-> orderService.getOrderById(null));
+     }
+      // ---------------3.DeleteOrderByID
+
+     @Test
+     void DeleteOrderByID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         List<Product>products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         products.add(AddedProduct2);
+         Order newOrder=new Order(newUser.getId(),200,products);
+         Order newOrder2=new Order(newUser.getId(),100,products);
+         orderService.addOrder(newOrder);
+         orderService.addOrder(newOrder2);
+         orderService.deleteOrderById(newOrder.getId());
+         orderService.deleteOrderById(newOrder2.getId());
+         assertEquals(orderService.getOrders().size(),0);
+     }
+     @Test
+     void DeleteOrderByNullID(){
+         assertThrows(Exception.class,()->orderService.deleteOrderById(null));
+     }
+
+     @Test
+     void DeleteOrderByWrongID(){
+         User newUser=userService.addUser(new User("Youssef",new ArrayList<Order>()));
+         Product AddedProduct1=productService.addProduct(new Product(UUID.randomUUID(),"Milk",25));
+         Product AddedProduct2=productService.addProduct(new Product(UUID.randomUUID(),"Cheese",45));
+         List<Product>products=new ArrayList<Product>();
+         products.add(AddedProduct1);
+         products.add(AddedProduct2);
+         Order newOrder=new Order(newUser.getId(),200,products);
+         Order newOrder2=new Order(newUser.getId(),100,products);
+         orderService.addOrder(newOrder);
+         orderService.addOrder(newOrder2);
+         assertThrows(Exception.class,()->orderService.deleteOrderById(UUID.randomUUID()));
+     }
+
+ }
+

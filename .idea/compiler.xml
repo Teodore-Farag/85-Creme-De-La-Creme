@@ -7,11 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="MiniProject1" />
+        <module name="85-Creme-De-La-Creme" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="85-Creme-De-La-Creme" options="-parameters" />
       <module name="MiniProject1" options="-parameters" />
     </option>
   </component>
